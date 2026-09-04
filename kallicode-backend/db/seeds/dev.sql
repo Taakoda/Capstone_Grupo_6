@@ -1,5 +1,5 @@
 -- Seeds de desarrollo: tenant demo con usuarios de cada rol y tickets del wireframe.
--- Contraseña de todos los usuarios: Dev12345!demo
+-- Contraseña de todos los usuarios: 
 -- (hash Argon2id generado con argon2-cffi; ver README)
 BEGIN;
 
