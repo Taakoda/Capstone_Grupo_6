@@ -11,6 +11,7 @@ from fastapi import APIRouter, Request
 from sqlalchemy import text
 from pydantic import BaseModel, EmailStr, Field
 
+from kallicode_core.comercial import clave_redis
 from kallicode_core import comercial
 from kallicode_core.auditoria import registrar_evento
 from kallicode_core.config import get_settings
@@ -108,7 +109,7 @@ async def login(datos: LoginIn, request: Request) -> TokensOut:
 
     # bloqueo por intentos (5 fallos -> 15 min) en Redis
     r = comercial.redis_cliente()
-    clave_bloqueo = f"login:bloqueo:{hash_email(email)}"
+    clave_bloqueo = clave_redis("global", "login", "bloqueo", hash_email(email))
     if await r.exists(clave_bloqueo):
         raise AppError("AUTH_CUENTA_BLOQUEADA", 423,
                        "Demasiados intentos fallidos. Inténtalo de nuevo en 15 minutos.")
@@ -120,7 +121,7 @@ async def login(datos: LoginIn, request: Request) -> TokensOut:
                          {"e": email})
     if not user or not user["password_hash"] or \
             not verificar_password(datos.password, user["password_hash"]):
-        clave_fallos = f"login:fallos:{hash_email(email)}"
+        clave_fallos = clave_redis("global", "login", "fallos", hash_email(email))
         n = await r.incr(clave_fallos)
         await r.expire(clave_fallos, 900)
         if n >= 5:
@@ -132,7 +133,7 @@ async def login(datos: LoginIn, request: Request) -> TokensOut:
         raise AppError("AUTH_CUENTA_DESACTIVADA", 403,
                        "Tu cuenta está desactivada. Contacta al administrador.")
 
-    await r.delete(f"login:fallos:{hash_email(email)}")
+    await r.delete(clave_redis("global", "login", "fallos", hash_email(email)))
     async with sesion_tenant(user["tenant_id"], actor=f"user:{user['id']}") as db:
         salida = await _emitir_par(db, user, ip, request.headers.get("user-agent"))
         await db.execute(text(
@@ -221,7 +222,7 @@ async def forgot_password(datos: ForgotIn) -> dict:
     """
     email = datos.email.lower()
     r = comercial.redis_cliente()
-    clave = f"forgot:{hash_email(email)}"
+    clave = clave_redis("global", "forgot", hash_email(email))
     n = await r.incr(clave)
     await r.expire(clave, 900)
     if n <= 3:
