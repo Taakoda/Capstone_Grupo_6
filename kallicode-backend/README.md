@@ -20,7 +20,7 @@ make api         # http://localhost:8000/docs
 make workers     # en otra terminal
 ```
 
-Usuarios seed (tenant `org_demo`, contraseña `Dev12345!demo`):
+Usuarios seed (tenant `org_demo`, contraseña ):
 `owner@demo.kallicode.dev`, `admin@…`, `arquitecto@…`, `aprobador@…`, `dev@…`.
 
 ## Estructura
