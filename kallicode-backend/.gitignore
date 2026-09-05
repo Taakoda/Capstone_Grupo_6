@@ -1,0 +1,51 @@
+# Bytecode y cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# uv
+.uv-cache/
+
+# Distribución / build
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Testing / cobertura
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Variables de entorno y secretos locales
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker / datos locales de servicios (si make up genera volúmenes locales)
+docker-data/
+
+# Node (si el portal comparte monorepo con el backend)
+node_modules/
+dist/
