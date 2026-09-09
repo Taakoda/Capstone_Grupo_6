@@ -48,4 +48,4 @@ docker-data/
 
 # Node (si el portal comparte monorepo con el backend)
 node_modules/
-dist/*.pyc
+dist/
