@@ -1,0 +1,58 @@
+# .github/workflows/backend-ci.yml
+name: Backend CI
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "db/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: kallicode
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Instalar dependencias
+        run: uv sync
+
+      - name: Aplicar schema y roles
+        env:
+          PGPASSWORD: dev
+        run: |
+          for f in db/0*.sql; do
+            psql -h localhost -U postgres -d kallicode -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: Chequeo — create_async_engine solo en db.py
+        run: python scripts/ci/check_engine_creation.py
+
+      - name: Correr pruebas
+        env:
+          KC_DATABASE_URL: postgresql+asyncpg://kallicode_app_local:dev@localhost:5432/kallicode
+          KC_DATABASE_URL_ADMIN: postgresql+asyncpg://kallicode_admin_local:dev@localhost:5432/kallicode
+        run: uv run pytest tests/ -v

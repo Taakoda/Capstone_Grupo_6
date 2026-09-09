@@ -4,6 +4,7 @@ Local: los secretos viven en Redis con prefijo específico por tenant
 (suficiente para desarrollo; NO producción). TODO(produccion): Azure Key Vault vía
 azure-keyvault-secrets con managed identity — misma interfaz.
 """
+
 from __future__ import annotations
 
 import json

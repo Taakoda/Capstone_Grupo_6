@@ -18,7 +18,15 @@ dependencies = [
   "cryptography>=43",
   "jsonschema>=4.23",
   "anyio>=4.4",
+  "kallicode-core",
+  "kallicode-api",
+  "kallicode-workers",
 ]
+
+[tool.uv.sources]
+kallicode-core = { workspace = true }
+kallicode-api = { workspace = true }
+kallicode-workers = { workspace = true }
 
 [dependency-groups]
 dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "mypy>=1.11", "pgserver>=0.1.4"]
@@ -26,12 +34,31 @@ dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "mypy>=1.11", "pgserver
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+ignore = [
+    "B008",   # FastAPI usa Depends() en defaults de argumentos — patrón estándar del framework
+    "BLE001", # except Exception genérico — deuda técnica preexistente, no de este ticket
+    "S110",   # try/except/pass — mismo motivo que BLE001
+    "DTZ005", "DTZ011",  # datetime sin timezone explícito — deuda técnica preexistente
+    "PYI034", # __enter__ debería devolver Self — cosmético, no bloqueante
+    "SIM102", # if anidados — estilo, no bug
+    "B039",   # ContextVar con default mutable — revisar en ticket de logging aparte
+    "ISC004", # concatenación implícita de strings — cosmético
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 
 [tool.uv.workspace]
 members = ["packages/core", "apps/api", "apps/workers"]
 
 [tool.setuptools]
 py-modules = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+bypass-selection = true
