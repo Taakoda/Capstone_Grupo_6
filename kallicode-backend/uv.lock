@@ -622,7 +622,7 @@ requires-dist = [{ name = "kallicode-core", editable = "packages/core" }]
 [[package]]
 name = "kallicode-backend"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "anyio" },
     { name = "argon2-cffi" },
@@ -632,6 +632,9 @@ dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
     { name = "jsonschema" },
+    { name = "kallicode-api" },
+    { name = "kallicode-core" },
+    { name = "kallicode-workers" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pyjwt", extra = ["crypto"] },
@@ -659,6 +662,9 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "jsonschema", specifier = ">=4.23" },
+    { name = "kallicode-api", editable = "apps/api" },
+    { name = "kallicode-core", editable = "packages/core" },
+    { name = "kallicode-workers", editable = "apps/workers" },
     { name = "pydantic", specifier = ">=2.8" },
     { name = "pydantic-settings", specifier = ">=2.4" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.9" },
